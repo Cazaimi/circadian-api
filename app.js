@@ -5,15 +5,10 @@ const _ = require('lodash'),
   logger = require('morgan'),
   locals = require(path.join(__dirname, '/config/locals')),
 
-// Change later.
-  indexRouter = require('./config/routes/index');
-// const usersRouter = require('./config/routes/users');
+  app = express(),
 
-  app = express();
-
-  console.log('path.join(__dirname, /config/routes/hourdata):', path.join(__dirname, '/config/routes/hourdata'));
-
-  hourData = require(path.join(__dirname, '/config/routes/hourdata.js'));
+  hourData = require(path.join(__dirname, '/config/routes/hourdata.js')),
+  aggregate = require(path.join(__dirname, '/config/routes/aggregate.js'));
 
 _.assign(app.locals, locals);
 app.use(logger('dev'));
@@ -22,9 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-console.log('hourdata:', hourData);
-
-// app.use('hourdata', hourData);
 app.use('/hourdata', hourData);
+app.use('/aggregate', aggregate);
 
 module.exports = app;

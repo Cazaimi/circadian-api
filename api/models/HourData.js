@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const _ = require('lodash'),
   path = require('path'),
   sqlite = require('sqlite'),
@@ -32,13 +33,29 @@ module.exports = {
     return result;
   },
 
-  async get (id, options) {
+  async get (id, hour, date, options) {
     if (_.isEmpty(options)) { _.noop(); }
+
+    let where = [];
+
+    if (id !== undefined) { where.push(`id=${id}`); }
+
+    if (hour) { where.push(`hour_id=${hour}`); }
+
+    if (date) { where.push(`date_id=${date}`); }
 
     /* eslint-disable-next-line */
     let db = await dbPromise,
       result,
-      queryString = id ? `select * from hour_data where id=${id};` : 'select * from hour_data;';
+      base = 'select * from hour_data',
+      queryString;
+
+    try {
+      queryString = this.constructQuery(base, where);
+    }
+    catch (error) {
+      throw error;
+    }
 
     try {
       result = await db.all(queryString);
@@ -92,5 +109,27 @@ module.exports = {
     }
 
     return toBeDeleted;
+  },
+
+  constructQuery (base, where, options) {
+    if (_.isEmpty(options)) { _.noop(); }
+
+    if (_.isArray(where) && where.length !== 0) {
+      base = base.concat(' where');
+
+      where.forEach(function (clause, index) {
+        if (!clause.length) { return; }
+
+        if (!index) {
+          base = base.concat(' ', clause);
+
+          return;
+        }
+
+        base = base.concat(' AND ', clause);
+      });
+    }
+
+    return base.concat(';');
   }
 };

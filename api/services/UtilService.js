@@ -1,14 +1,17 @@
 const _ = require('lodash'),
-  dateObj = new Date(),
 
   models = require('../models');
 
 module.exports = {
   getDateNow () {
-    return `${dateObj.getDate()}-${dateObj.getMonth()+1}-${dateObj.getFullYear()}`;
+    let dateObj = new Date();
+
+    return `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
   },
 
   getHourNow () {
+    let dateObj = new Date();
+
     return dateObj.getHours() + 1;
   },
 
@@ -21,8 +24,8 @@ module.exports = {
         hour = await models.Hour.findById(result.hour_id);
 
       _.assign(result, {
-        date: date[0].date,
-        hour: hour[0].hour
+        date: _.get(date, '[0].date'),
+        hour: _.get(hour, '[0].hour')
       });
 
       processedResult.push(_.omit(result, ['hour_id', 'date_id']));

@@ -1,4 +1,5 @@
-const path = require('path'),
+const _ = require('lodash'),
+  path = require('path'),
   services = require(path.join(__dirname, '/../services')),
   models = require(path.join(__dirname, '/../models'));
 
@@ -41,10 +42,12 @@ module.exports = {
     let id = req.params.id,
       hour = req.query.hour,
       date = req.query.date,
+      dateProcessed = {},
       result;
 
     try {
-      result = await models.HourData.get(id, hour, date);
+      dateProcessed = date && await models.Date.findOrCreate(date);
+      result = await models.HourData.get(id, hour, _.get(dateProcessed, '[0].id'));
     }
     catch (error) {
       return res.status(error.statusCode || 500).json(error);
