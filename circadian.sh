@@ -1,4 +1,4 @@
-osascript ~/respositories/privateStuff/circadian/notif.scpt
+osascript ./notif.scpt
 
 afplay /System/Library/Sounds/Glass.aiff
 
